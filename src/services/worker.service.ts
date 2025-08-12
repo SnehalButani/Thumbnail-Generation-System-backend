@@ -11,7 +11,7 @@ import { setTimeout } from "timers/promises";
 import { __dirname, path } from "../utils/path";
 
 const redisPublisher = createClient({ url: process.env.REDIS_URL });
-await redisPublisher.connect();
+redisPublisher.connect();
 
 async function emitJobUpdate(jobData: {
   jobId: string;

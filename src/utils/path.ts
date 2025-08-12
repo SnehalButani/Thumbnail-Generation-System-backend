@@ -1,7 +1,5 @@
 import path from "path";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);     
+const __dirname_cjs = __dirname;
 
-export { __dirname, path };
+export { __dirname_cjs as __dirname, path };
