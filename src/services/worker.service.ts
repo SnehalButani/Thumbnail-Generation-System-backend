@@ -8,7 +8,7 @@ import sharp from "sharp";
 import ffmpegPath from "ffmpeg-static";
 import { getBullMQConnection } from "../queues/thumbnailQueue";
 import { setTimeout } from "timers/promises";
-import { __dirname, path } from "../utils/path";
+import { __dirname, path, uploadsDir } from "../utils/path";
 
 const redisPublisher = createClient({ url: process.env.REDIS_URL });
 redisPublisher.connect();
@@ -32,7 +32,7 @@ const processVideoThumbnail = async ({
   inputPath: string;
   outputPath: string;
 }) => {
-  const tempDir = path.join(__dirname, "..", "uploads", "temp");
+  const tempDir = path.join(uploadsDir, "temp");
   if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 
   const tempFramePath = path.join(tempDir, `${jobId}_thumbnail`);
@@ -88,9 +88,10 @@ const initWorker = () => {
           status: "processing",
         });
 
-        const fullOriginalPath = path.join(__dirname, "..", jobDoc.originalFilePath);
+        // jobDoc.originalFilePath is stored like "uploads/originals/..."; resolve from project root
+        const fullOriginalPath = path.join(process.cwd(), jobDoc.originalFilePath);
 
-        const thumbnailsDir = path.join(__dirname, "..", "uploads", "thumbnails");
+        const thumbnailsDir = path.join(uploadsDir, "thumbnails");
         if (!fs.existsSync(thumbnailsDir)) fs.mkdirSync(thumbnailsDir, { recursive: true });
 
         const fullOutputPath = path.join(thumbnailsDir, `${jobId}.jpg`);

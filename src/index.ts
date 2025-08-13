@@ -7,7 +7,8 @@ import { setupSocketIO } from "./utils/socket";
 import "./services/worker.service";
 import userRoutes from "./routes/user.routes";
 import uploadRoutes from "./routes/upload.routes";
-import { path } from "./utils/path";
+import {  uploadsDir } from "./utils/path";
+import fs from "fs";
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -21,7 +22,10 @@ connectDB();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use("/uploads", express.static(path.join(process.cwd(), "src", "uploads")));
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use("/uploads", express.static(uploadsDir));
 
 // Routes
 app.use("/api/users", userRoutes);

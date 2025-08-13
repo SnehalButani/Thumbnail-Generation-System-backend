@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { IUser } from "../models/user";
 import { createThumbnailJob } from "../services/upload.service";
 import asyncWrapper from "../utils/handler";
-import { __dirname,path } from "../utils/path";
+import { path, uploadsDir } from "../utils/path";
 
 export const postUploadController = asyncWrapper(async (req: Request, res: Response) => {
     if (!req.files || !(req.files as Express.Multer.File[]).length) {
@@ -15,20 +15,23 @@ export const postUploadController = asyncWrapper(async (req: Request, res: Respo
 
     for (const file of files) {
         const fileType = file.mimetype.startsWith("image") ? "image" : "video";
-    
-        const relativePath = path
-          .relative(path.join(__dirname, "../uploads"), file.path)
-          .replace(/\\/g, "/");
-    
-        const originalFilePath = `uploads/${relativePath}`;
-    
+
+        // Compute path relative to the runtime uploads directory and sanitize
+        const rawRel = path.relative(uploadsDir, file.path);
+        const safeRel = rawRel
+          .split(path.sep)
+          .filter(seg => seg && seg !== '.' && seg !== '..')
+          .join('/');
+
+        const originalFilePath = `uploads/${safeRel}`;
+
         const job = await createThumbnailJob(
           user.id,
           file.originalname,
           fileType,
           originalFilePath
         );
-    
+
         jobs.push(job);
       }
 
