@@ -1,7 +1,8 @@
 import multer from 'multer';
 import fs from 'fs';
 import { Request } from 'express';
-import { __dirname, path } from '../utils/path';
+import { path } from '../utils/path';
+import { __dirname } from '../utils/path';
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
