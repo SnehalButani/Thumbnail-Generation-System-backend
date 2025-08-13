@@ -11,10 +11,11 @@ export const getBullMQConnection = () => {
   const redisUrl = new URL(process.env.REDIS_URL || 'redis://localhost:6379');
   
   return {
-    host: redisUrl.hostname,
-    port: parseInt(redisUrl.port || '6379'),
+    family: 0,
+    host: redisUrl.hostname || process.env.REDISHOST,
+    port: parseInt(redisUrl.port || process.env.REDISPORT),
     username: redisUrl.username || undefined,
-    password: redisUrl.password || process.env.REDIS_PASSWORD,
+    password: redisUrl.password || process.env.REDISPASSWORD,
     tls: process.env.REDIS_TLS === 'true' ? {
       rejectUnauthorized: false
     } : undefined,
